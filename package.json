@@ -1,11 +1,11 @@
 {
   "name": "notspayys-bot",
   "version": "1.0.0",
-  "description": "NotSpayys Anti-Cheat — Discord bot (welkomstberichten, support-tickets, slash-commands)",
+  "description": "NotSpayys Anti-Cheat — bot",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
+    "start": "node deploy-commands.js && node index.js",
     "deploy-commands": "node deploy-commands.js"
   },
   "dependencies": {
