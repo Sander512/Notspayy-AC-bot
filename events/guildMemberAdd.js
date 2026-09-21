@@ -1,14 +1,15 @@
+const { getSettings } = require('../settings');
+
 module.exports = {
     name: 'guildMemberAdd',
     async execute(member) {
-        const channelId = process.env.WELCOME_CHANNEL_ID;
-        if (!channelId) return;
+        const settings = await getSettings();
+        if (!settings.welcome_enabled || !settings.welcome_channel_id) return;
 
-        const channel = member.guild.channels.cache.get(channelId);
+        const channel = member.guild.channels.cache.get(settings.welcome_channel_id);
         if (!channel || !channel.isTextBased()) return;
 
-        const template = process.env.WELCOME_MESSAGE ||
-            'Welkom {user} op **{server}**!';
+        const template = settings.welcome_message || 'Welkom {user} op **{server}**!';
 
         const message = template
             .replace(/{user}/g, `<@${member.id}>`)

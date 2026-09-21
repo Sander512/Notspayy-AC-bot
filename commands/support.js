@@ -6,6 +6,7 @@ const {
     ButtonStyle,
     EmbedBuilder,
 } = require('discord.js');
+const { getSettings } = require('../settings');
 
 function ticketChannelName(user) {
     return `ticket-${user.username}`.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 90);
@@ -14,11 +15,12 @@ function ticketChannelName(user) {
 module.exports = {
     name: 'support',
     async execute(interaction) {
-        const categoryId = process.env.SUPPORT_CATEGORY_ID;
-        const staffRoleId = process.env.SUPPORT_STAFF_ROLE_ID;
+        const settings = await getSettings();
+        const categoryId = settings.support_category_id;
+        const staffRoleId = settings.support_staff_role_id;
 
-        if (!categoryId) {
-            return interaction.reply({ content: 'Support-tickets zijn nog niet ingesteld (SUPPORT_CATEGORY_ID ontbreekt).', ephemeral: true });
+        if (!settings.support_enabled || !categoryId) {
+            return interaction.reply({ content: 'Support-tickets staan momenteel uit of zijn nog niet ingesteld.', ephemeral: true });
         }
 
         const guild = interaction.guild;
