@@ -1,6 +1,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 
 const REQUIRED_ENV = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID', 'DISCORD_GUILD_ID'];
@@ -49,6 +50,19 @@ process.on('unhandledRejection', (err) => {
 });
 process.on('uncaughtException', (err) => {
     console.error('[uncaughtException]', err);
+});
+
+// ---------------------------------------------------------------
+// Health-check webserver
+// Render (Web Service) verwacht een open poort. Laat een pinger zoals
+// UptimeRobot elke 5 minuten deze URL bezoeken zodat de service wakker blijft.
+// ---------------------------------------------------------------
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('ok');
+}).listen(PORT, () => {
+    console.log(`[web] Health-check server actief op poort ${PORT}.`);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
