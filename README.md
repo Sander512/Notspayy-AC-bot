@@ -1,13 +1,15 @@
 # NotSpayys Bot
 
 Een altijd-online Discord-bot: welkomstberichten bij nieuwe leden, een
-support-ticketsysteem, en een paar slash-commands (`/ping`, `/support`,
-`/close`, `/license`).
+support-ticketsysteem, serverregels, en een reeks slash-commands
+(`/ping`, `/support`, `/close`, `/license`, `/serverinfo`, `/userinfo`,
+`/avatar`, `/uptime`, `/invite`, `/rules`, `/announce`). Draait als Render
+Web Service dankzij een ingebouwde statuspagina (zie onderaan).
 
 **Belangrijk:** dit is een *persistente* bot — hij moet continu blijven
 draaien (in tegenstelling tot de API, die serverless op Vercel draait).
 Dat betekent dat hij **niet** op Vercel kan draaien; hij heeft een eigen
-always-on plek nodig. Zie "Waar laat ik dit draaien?" onderaan.
+always-on plek nodig zoals Render.
 
 ## Installatie
 
@@ -53,17 +55,19 @@ npm start
 
 Zie je in de console `Ingelogd als ... — online en klaar.`? Dan werkt de bot.
 
-## Welkomstbericht aanpassen
+## Welkomstbericht, support-tickets en regels aanpassen
 
-Pas `WELCOME_MESSAGE` in `.env` aan. Beschikbare placeholders:
-`{user}` (mention), `{username}`, `{membercount}`, `{server}`.
+Deze staan **niet** meer in `.env` — stel ze in via `/owner` → tabblad
+**Bot** op je website. De bot haalt ze elke minuut automatisch opnieuw op.
 
-## Support-tickets
+## Statuspagina (nodig voor Render)
 
-- `/support` — maakt een privé kanaal aan onder `SUPPORT_CATEGORY_ID`, met
-  alleen de aanvrager, `SUPPORT_STAFF_ROLE_ID`, en de bot met toegang.
-- `/close` (of de "Ticket sluiten"-knop) — verwijdert het ticket-kanaal na
-  5 seconden.
+De bot start ook een kleine webserver (via `statusServer.js`) op
+`process.env.PORT`. Dit is nodig omdat Render's **Web Service**-type
+vereist dat er iets op een poort luistert — zonder dit ziet Render de
+deploy als "ongezond". Open de URL die Render je geeft in de browser en je
+ziet een statuspagina met bot-naam, servernaam, ledenaantal, uptime en
+ping. `/health` geeft hetzelfde in JSON-vorm terug.
 
 ## Waar laat ik dit draaien? (24/7 hosting)
 

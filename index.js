@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { startStatusServer } = require('./statusServer');
 
 const REQUIRED_ENV = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID', 'DISCORD_GUILD_ID'];
 const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
@@ -52,3 +53,4 @@ process.on('uncaughtException', (err) => {
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
+startStatusServer(client);

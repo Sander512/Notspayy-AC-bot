@@ -24,6 +24,46 @@ const commands = [
                 .setDescription('Je license-key, bv. NSP-FREE-XXXX-XXXX-XXXX')
                 .setRequired(true)
         ),
+
+    new SlashCommandBuilder()
+        .setName('serverinfo')
+        .setDescription('Toont informatie over deze Discord-server.'),
+
+    new SlashCommandBuilder()
+        .setName('userinfo')
+        .setDescription('Toont informatie over een gebruiker.')
+        .addUserOption((opt) =>
+            opt.setName('gebruiker').setDescription('Wie wil je bekijken? (standaard: jezelf)').setRequired(false)
+        ),
+
+    new SlashCommandBuilder()
+        .setName('avatar')
+        .setDescription('Toont de avatar van een gebruiker.')
+        .addUserOption((opt) =>
+            opt.setName('gebruiker').setDescription('Wie wil je bekijken? (standaard: jezelf)').setRequired(false)
+        ),
+
+    new SlashCommandBuilder()
+        .setName('uptime')
+        .setDescription('Hoe lang de bot al onafgebroken online is.'),
+
+    new SlashCommandBuilder()
+        .setName('invite')
+        .setDescription('Krijg een link om de bot ook op een andere server te zetten.'),
+
+    new SlashCommandBuilder()
+        .setName('rules')
+        .setDescription('Toont de serverregels.'),
+
+    new SlashCommandBuilder()
+        .setName('announce')
+        .setDescription('(Staff) Plaats een aankondiging in een kanaal.')
+        .addChannelOption((opt) =>
+            opt.setName('kanaal').setDescription('In welk kanaal?').setRequired(true)
+        )
+        .addStringOption((opt) =>
+            opt.setName('bericht').setDescription('De tekst van de aankondiging').setRequired(true)
+        ),
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
