@@ -1,10 +1,9 @@
 # NotSpayys Bot
 
-Een altijd-online Discord-bot: welkomstberichten bij nieuwe leden, een
-support-ticketsysteem, serverregels, en een reeks slash-commands
-(`/ping`, `/support`, `/close`, `/license`, `/serverinfo`, `/userinfo`,
-`/avatar`, `/uptime`, `/invite`, `/rules`, `/announce`). Draait als Render
-Web Service dankzij een ingebouwde statuspagina (zie onderaan).
+Een altijd-online Discord-bot: welkomstberichten, support-tickets,
+serverregels, en 26 slash-commands. **Werkt op elke Discord-server die de
+bot toevoegt** — elke server configureert zichzelf met `/setwelcome`,
+`/setsupport`, `/setrules` en `/link`, volledig los van elkaar.
 
 **Belangrijk:** dit is een *persistente* bot — hij moet continu blijven
 draaien (in tegenstelling tot de API, die serverless op Vercel draait).
@@ -22,18 +21,21 @@ cp .env.example .env
 Vul in `.env`:
 - `DISCORD_BOT_TOKEN` — Developer Portal → jouw applicatie → **Bot** → Reset Token
 - `DISCORD_CLIENT_ID` — Developer Portal → **OAuth2 → General** → Client ID (zelfde als de API gebruikt)
-- `DISCORD_GUILD_ID` — rechtsklik je servernaam in Discord → ID kopiëren
-- `WELCOME_CHANNEL_ID` — rechtsklik het kanaal waar welkomstberichten moeten komen → ID kopiëren
-- `SUPPORT_CATEGORY_ID` — rechtsklik de categorie waaronder ticket-kanalen moeten komen → ID kopiëren
-- `SUPPORT_STAFF_ROLE_ID` — de staff-rol die automatisch in elk ticket komt
-- `NOTSPAYYS_API_URL` — je website- of API-URL (voor `/license`)
+- `NOTSPAYYS_API_URL` — je website-URL (voor `/license`, `/link`, en alle instellingen)
+- `BOT_API_SECRET` — zelfde waarde als in de API's environment variables
+
+Welkomstkanaal, ticket-categorie, staff-rol en serverregels stel je **niet**
+meer in `.env` in — elke Discord-server die de bot toevoegt regelt dat zelf
+met `/setwelcome`, `/setsupport` en `/setrules`. Zie "Zelfbediening" onderaan.
 
 **Zorg dat de bot op je server staat** met de juiste permissies:
 1. Developer Portal → **OAuth2 → URL Generator**.
 2. Scopes: `bot` en `applications.commands`.
-3. Bot-permissies: **Manage Channels**, **Send Messages**, **View Channels**,
-   **Manage Roles** (voor de ticket-permissies), **Read Message History**.
-4. Open de gegenereerde link, kies je server.
+3. Bot-permissies: **Kick Members**, **Ban Members**, **Moderate Members**,
+   **Manage Messages**, **Manage Channels**, **Manage Roles**, **Send
+   Messages**, **View Channels**, **Read Message History**.
+4. Open de gegenereerde link, kies je server. **Dit werkt voor elke server**
+   — niet alleen die van jou.
 
 **Zet aan de Discord-kant ook de "Server Members Intent" aan:**
 Developer Portal → jouw applicatie → **Bot** → onder "Privileged Gateway
@@ -46,6 +48,21 @@ Eenmalig (en na elke wijziging aan een command):
 ```bash
 npm run deploy-commands
 ```
+Dit registreert de commando's **globaal** (niet voor één specifieke
+server), zodat ze werken op elke server waar de bot lid van wordt. Kan tot
+~1 uur duren voor ze overal zichtbaar zijn na de eerste keer.
+
+## Zelfbediening — elke server regelt zichzelf
+
+Nadat de bot is toegevoegd, configureert elke server-admin zijn eigen
+server met commando's (vereist de "Server beheren"-permissie in Discord):
+- `/setwelcome kanaal:#welkom bericht:"Welkom {user}!" aan:true`
+- `/setsupport categorie:Tickets staffrol:@Staff aan:true`
+- `/setrules tekst:"1. Wees respectvol..."`
+- `/link key:NSP-FREE-XXXX-XXXX-XXXX` — koppelt aan hun NotSpayys-server voor `/detections`, `/bans`, `/acstats`
+
+Instellingen zijn ook via `/owner` → tabblad **Bot** te beheren (vul het
+Discord Server-ID in om een specifieke server te laden/bewerken).
 
 ## Starten
 

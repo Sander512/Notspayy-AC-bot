@@ -15,7 +15,7 @@ function ticketChannelName(user) {
 module.exports = {
     name: 'support',
     async execute(interaction) {
-        const settings = await getSettings();
+        const settings = await getSettings(interaction.guildId);
         const categoryId = settings.support_category_id;
         const staffRoleId = settings.support_staff_role_id;
 

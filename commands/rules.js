@@ -4,7 +4,7 @@ const { getSettings } = require('../settings');
 module.exports = {
     name: 'rules',
     async execute(interaction) {
-        const settings = await getSettings();
+        const settings = await getSettings(interaction.guildId);
 
         const embed = new EmbedBuilder()
             .setTitle('Serverregels')

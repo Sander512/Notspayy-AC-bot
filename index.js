@@ -4,7 +4,7 @@ const path = require('path');
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { startStatusServer } = require('./statusServer');
 
-const REQUIRED_ENV = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID', 'DISCORD_GUILD_ID'];
+const REQUIRED_ENV = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID'];
 const missing = REQUIRED_ENV.filter((key) => !process.env[key]);
 if (missing.length > 0) {
     console.error(`Ontbrekende environment-variabelen: ${missing.join(', ')}. Kopieer .env.example naar .env.`);

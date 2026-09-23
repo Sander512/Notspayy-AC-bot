@@ -1,51 +1,53 @@
-// Haalt de bot-instellingen (welkomstbericht, ticket-config) op bij de API,
-// zodat ze vanuit het Owner Panel op de website aan te passen zijn zonder
-// de bot opnieuw te hoeven starten.
+// Haalt de bot-instellingen per Discord-server (guild) op bij de API.
+// Elke server heeft zijn eigen rij -- geen gedeelde instellingen meer
+// tussen verschillende klanten die deze bot gebruiken.
 
-let cache = null;
-let lastFetch = 0;
-const REFRESH_MS = 60 * 1000; // elke minuut verversen
+const cache = new Map(); // guildId -> { settings, lastFetch }
+const REFRESH_MS = 60 * 1000;
 
-async function fetchSettings() {
+async function fetchSettings(guildId) {
     const apiUrl = process.env.NOTSPAYYS_API_URL;
     const secret = process.env.BOT_API_SECRET;
 
     if (!apiUrl || !secret) {
-        console.warn('[settings] NOTSPAYYS_API_URL of BOT_API_SECRET ontbreekt — bot-instellingen kunnen niet opgehaald worden.');
+        console.warn('[settings] NOTSPAYYS_API_URL of BOT_API_SECRET ontbreekt.');
         return null;
     }
 
     try {
-        const res = await fetch(`${apiUrl}/bot-settings`, {
+        const res = await fetch(`${apiUrl}/bot-settings?guildId=${guildId}`, {
             headers: { Authorization: `Bearer ${secret}` },
         });
         if (!res.ok) {
-            console.error(`[settings] ophalen mislukt: HTTP ${res.status}`);
-            return cache; // val terug op de laatst bekende waarden i.p.v. alles uit te zetten
+            console.error(`[settings] ophalen mislukt voor guild ${guildId}: HTTP ${res.status}`);
+            return cache.get(guildId)?.settings || null;
         }
         const data = await res.json();
         return data.settings;
     } catch (err) {
-        console.error('[settings] netwerkfout bij ophalen:', err.message);
-        return cache;
+        console.error(`[settings] netwerkfout voor guild ${guildId}:`, err.message);
+        return cache.get(guildId)?.settings || null;
     }
 }
 
-/** Geeft de gecachete instellingen terug, ververst ze op de achtergrond als ze verlopen zijn. */
-async function getSettings() {
+/** Geeft de gecachete instellingen van één specifieke server terug. */
+async function getSettings(guildId) {
+    const entry = cache.get(guildId);
     const now = Date.now();
-    if (!cache || now - lastFetch > REFRESH_MS) {
-        cache = await fetchSettings();
-        lastFetch = now;
+
+    if (!entry || now - entry.lastFetch > REFRESH_MS) {
+        const settings = await fetchSettings(guildId);
+        cache.set(guildId, { settings, lastFetch: now });
+        return settings || {};
     }
-    return cache || {};
+    return entry.settings || {};
 }
 
-/** Forceert een directe herlaad, los van de normale ververs-cyclus. */
-async function refreshNow() {
-    cache = await fetchSettings();
-    lastFetch = Date.now();
-    return cache;
+/** Forceert een directe herlaad voor één server (bv. meteen na /link). */
+async function refreshNow(guildId) {
+    const settings = await fetchSettings(guildId);
+    cache.set(guildId, { settings, lastFetch: Date.now() });
+    return settings;
 }
 
 module.exports = { getSettings, refreshNow };
